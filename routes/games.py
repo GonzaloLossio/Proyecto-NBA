@@ -1,2 +1,3 @@
-from flask import blueprints,request,jsonify
-from services.games_api_client import fetch_games
+from flask import Blueprint,request,jsonify
+
+games_bp = Blueprint("games",__name__)
