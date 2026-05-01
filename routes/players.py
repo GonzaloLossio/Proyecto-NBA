@@ -30,6 +30,9 @@ def search_player():
 def player_stat():
     player_id = request.args.get("id")
     season = request.args.get("season","2023-24")
+    min_points = request.args.get("min_points")
+    page = int(request.args.get("page",1))
+    per_page = int(request.args.get("per_page",10))
 
     if not player_id:
         return jsonify({"Error" : "Se requiere el ID del jugador"})
@@ -43,13 +46,25 @@ def player_stat():
         "rebounds" : stat["REB"]
     } for stat in raw_data]
 
-    min_points = request.args.get("min_points")
-
     if min_points:
         clean_data = [g for g in clean_data if g["points"] >= int(min_points)]
 
+    total = len (clean_data)
+    total_pages = -(-total // per_page)
+    start = (page - 1) * per_page
+    end = page * per_page
 
-    return jsonify(clean_data)
+    return jsonify({                                  # 5. devuelves con meta
+        "data": clean_data[start:end],
+        "meta": {
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    })
 
 @players_bp.route("/trends")
 @cache.cached(timeout=300, query_string=True)
