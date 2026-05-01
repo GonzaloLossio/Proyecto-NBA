@@ -9,12 +9,12 @@ def search_player():
     name = request.args.get("name")
 
     if not name or len (name)<3:
-        return jsonify({"Error : Ingrese al menos 3 letras para poder buscar un jugador"}), 400
+        return jsonify({"Error": "Ingrese al menos 3 letras para poder buscar un jugador"}), 400
     
     raw_data = fetch_players(name)
 
     if not raw_data:
-        return jsonify({"RESULTADOS" : [] , "Mensaje" : "Jugador No encotrado"})
+        return jsonify({"RESULTADOS" : [] , "Mensaje" : "Jugador No encotrado"}),404
     
     clean_data = []
     clean_data = [{
@@ -35,7 +35,7 @@ def player_stat():
     per_page = int(request.args.get("per_page",10))
 
     if not player_id:
-        return jsonify({"Error" : "Se requiere el ID del jugador"})
+        return jsonify({"Error" : "Se requiere el ID del jugador"}),400
     
     raw_data = fetch_players_stats(player_id = player_id, season =season)
 
@@ -73,12 +73,12 @@ def player_trends():
     season = request.args.get("season","2023-24")
 
     if not player_id:
-        return jsonify({"Error: Se requiere el ID del jugador"})
+        return jsonify({"Error": "Se requiere el ID del jugador"}),400
     
     data = fetch_player_trends(player_id=player_id,season=season)
 
     if not data:
-        return jsonify({"Error: no se encontraron los datos para este jugador"})
+        return jsonify({"Error": "no se encontraron los datos para este jugador"}),404
     
     return data
 
@@ -90,11 +90,11 @@ def compare_players():
     season = request.args.get("season","2023-24")
 
     if not first_id or not second_id:
-        return jsonify({"Error : Se requiere los 2 IDS de los jugadores"})
+        return jsonify({"Error" : "Se requiere los 2 IDS de los jugadores"}),400
     
     data = fetch_compare_players(first_id=first_id,second_id=second_id,season=season)
 
     if not data:
-        return jsonify({"Error : no se encontraron los datos de los jugadores"})
+        return jsonify({"Error" : "no se encontraron los datos de los jugadores"}),404
     
     return data
