@@ -33,9 +33,13 @@ def fetch_player_trends(player_id,season):
 
     hot_streak = avg_last_5["points"]>=25     
 
+    info_player = players.find_player_by_id(int(player_id))
+    full_name = info_player["full_name"]
+    
     return{
         "player_id" : player_id,
         "season" : season,
+        "name" : full_name,
         "last_5_games" :[{
             "date" : g["GAME_DATE"],
             "points" : g["PTS"],
@@ -56,9 +60,9 @@ def fetch_compare_players(first_id,second_id,season):
         return None
     
     winner = {
-        "points" : first_id if  first_player_stats["season_averages"]["points"] > second_player_stats["season_averages"]["points"] else second_id,
-        "assists" : first_id if  first_player_stats["season_averages"]["assists"] > second_player_stats["season_averages"]["assists"] else second_id,
-        "rebounds" : first_id if  first_player_stats["season_averages"]["rebounds"] > second_player_stats["season_averages"]["rebounds"] else second_id
+        "points" : first_player_stats["name"] if  first_player_stats["season_averages"]["points"] > second_player_stats["season_averages"]["points"] else second_player_stats["name"] ,
+        "assists" : first_player_stats["name"]  if  first_player_stats["season_averages"]["assists"] > second_player_stats["season_averages"]["assists"] else second_player_stats["name"] ,
+        "rebounds" : first_player_stats["name"]  if  first_player_stats["season_averages"]["rebounds"] > second_player_stats["season_averages"]["rebounds"] else second_player_stats["name"] 
     }
 
     return{
