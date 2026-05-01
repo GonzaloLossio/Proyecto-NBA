@@ -41,6 +41,12 @@ def player_stat():
         "rebounds" : stat["REB"]
     } for stat in raw_data]
 
+    min_points = request.args.get("min_points")
+
+    if min_points:
+        clean_data = [g for g in clean_data if g["points"] >= int(min_points)]
+
+        
     return jsonify(clean_data)
 
 @players_bp.route("/trends")
