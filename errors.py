@@ -25,3 +25,11 @@ def register_error_handlers(app):
             "message" : "Algo salió mal en el servidor",
             "status" : 500
         }),500
+    
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        return jsonify({
+            "error": "RATELIMIT_EXCEEDED",
+            "message": "Has hecho demasiadas peticiones. Por favor, espera un minuto.",
+            "status": 429
+        }), 429

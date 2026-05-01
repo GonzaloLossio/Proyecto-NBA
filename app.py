@@ -1,11 +1,15 @@
 from flask import Flask
 from routes.players import players_bp
 from routes.games import games_bp
-from extensions import cache
+from extensions import cache, limiter
 from errors import register_error_handlers
+from flasgger import Swagger
 
 app = Flask(__name__)
 cache.init_app(app, config={"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300})
+limiter.init_app(app)
+swagger = Swagger(app)
+
 register_error_handlers(app)
 
 app.register_blueprint(players_bp)
