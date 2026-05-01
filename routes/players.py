@@ -1,5 +1,6 @@
 from flask import Blueprint,request,jsonify
 from services.players_api_client import fetch_players,fetch_players_stats,fetch_player_trends,fetch_compare_players
+from extensions import cache
 
 players_bp = Blueprint("players",__name__)
 
@@ -25,6 +26,7 @@ def search_player():
     return jsonify({"Resultados" : clean_data})
 
 @players_bp.route("/stats")
+@cache.cached(timeout=300, query_string=True)
 def player_stat():
     player_id = request.args.get("id")
     season = request.args.get("season","2023-24")
@@ -46,10 +48,11 @@ def player_stat():
     if min_points:
         clean_data = [g for g in clean_data if g["points"] >= int(min_points)]
 
-        
+
     return jsonify(clean_data)
 
 @players_bp.route("/trends")
+@cache.cached(timeout=300, query_string=True)
 def player_trends():
     player_id = request.args.get("id")
     season = request.args.get("season","2023-24")
@@ -65,6 +68,7 @@ def player_trends():
     return data
 
 @players_bp.route("/compare")
+@cache.cached(timeout=300, query_string=True)
 def compare_players():
     first_id = request.args.get("id1")
     second_id = request.args.get("id2")
