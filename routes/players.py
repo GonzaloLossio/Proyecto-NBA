@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify
-from services.players_api_client import fetch_players,fetch_players_stats,fetch_player_trends
+from services.players_api_client import fetch_players,fetch_players_stats,fetch_player_trends,fetch_compare_players
 
 players_bp = Blueprint("players",__name__)
 
@@ -55,5 +55,21 @@ def player_trends():
 
     if not data:
         return jsonify({"Error: no se encontraron los datos para este jugador"})
+    
+    return data
+
+@players_bp.route("/compare")
+def compare_players():
+    first_id = request.args.get("id1")
+    second_id = request.args.get("id2")
+    season = request.args.get("season","2023-24")
+
+    if not first_id or not second_id:
+        return jsonify({"Error : Se requiere los 2 IDS de los jugadores"})
+    
+    data = fetch_compare_players(first_id=first_id,second_id=second_id,season=season)
+
+    if not data:
+        return jsonify({"Error : no se encontraron los datos de los jugadores"})
     
     return data

@@ -1,5 +1,6 @@
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playergamelog
+from utils.stats_helper import calcAverages
 
 def fetch_players(search = None):
     all_players = players.get_players()
@@ -19,14 +20,6 @@ def fetch_player_trends(player_id,season):
         return None
     
     last_5 = stats[:5]
-
-    def calcAverages(games):
-        i = len(games)
-        return { 
-            "points" : round(sum(g["PTS"] for g in games)/i,1), 
-            "assists" :round(sum(g["AST"] for g in games)/i,1), 
-            "rebounds" : round(sum(g["REB"] for g in games)/i,1)
-        }
 
     avg_last_5 = calcAverages(last_5)
     avg_season = calcAverages(stats)
@@ -50,6 +43,26 @@ def fetch_player_trends(player_id,season):
             "rebounds" : g["REB"]
         } for g in last_5],
         "averages_last_5" : avg_last_5,
+        "season_averages" : avg_season,
         "hot_streak" :  hot_streak,
         "trend" : trend
+    }
+
+def fetch_compare_players(first_id,second_id,season):
+    first_player_stats = fetch_player_trends(first_id,season)
+    second_player_stats = fetch_player_trends(second_id,season)
+
+    if not first_player_stats or not second_player_stats:
+        return None
+    
+    winner = {
+        "points" : first_id if  first_player_stats["season_averages"]["points"] > second_player_stats["season_averages"]["points"] else second_id,
+        "assists" : first_id if  first_player_stats["season_averages"]["assists"] > second_player_stats["season_averages"]["assists"] else second_id,
+        "rebounds" : first_id if  first_player_stats["season_averages"]["rebounds"] > second_player_stats["season_averages"]["rebounds"] else second_id
+    }
+
+    return{
+        "player_1" : first_player_stats,
+        "player_2" : second_player_stats,
+        "winner" : winner
     }
