@@ -11,3 +11,45 @@ def fetch_players_stats(player_id,season):
     gamelog = playergamelog.PlayerGameLog(player_id=player_id,season=season)
     data = gamelog.get_normalized_dict()
     return data["PlayerGameLog"]
+
+def fetch_player_trends(player_id,season):
+    stats = fetch_players_stats(player_id=player_id,season=season)
+
+    if not stats:
+        return None
+    
+    last_5 = stats[:5]
+
+    def calcAverages(games):
+        i = len(games)
+        return { 
+            "points" : round(sum(g["PTS"] for g in games)/i,1), 
+            "assists" :round(sum(g["AST"] for g in games)/i,1), 
+            "rebounds" : round(sum(g["REB"] for g in games)/i,1)
+        }
+
+    avg_last_5 = calcAverages(last_5)
+    avg_season = calcAverages(stats)
+
+    if avg_last_5["points"] > avg_season['points']:
+        trend = "subiendo"
+    elif avg_last_5["points"] < avg_season['points']:
+        trend = "bajando"
+    else:
+        trend = "estable"
+
+    hot_streak = avg_last_5["points"]>=25     
+
+    return{
+        "player_id" : player_id,
+        "season" : season,
+        "last_5_games" :[{
+            "date" : g["GAME_DATE"],
+            "points" : g["PTS"],
+            "assists" : g["AST"],
+            "rebounds" : g["REB"]
+        } for g in last_5],
+        "averages_last_5" : avg_last_5,
+        "hot_streak" :  hot_streak,
+        "trend" : trend
+    }

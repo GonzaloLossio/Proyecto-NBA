@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify
-from services.players_api_client import fetch_players,fetch_players_stats
+from services.players_api_client import fetch_players,fetch_players_stats,fetch_player_trends
 
 players_bp = Blueprint("players",__name__)
 
@@ -42,3 +42,18 @@ def player_stat():
     } for stat in raw_data]
 
     return jsonify(clean_data)
+
+@players_bp.route("/trends")
+def player_trends():
+    player_id = request.args.get("id")
+    season = request.args.get("season","2023-24")
+
+    if not player_id:
+        return jsonify({"Error: Se requiere el ID del jugador"})
+    
+    data = fetch_player_trends(player_id=player_id,season=season)
+
+    if not data:
+        return jsonify({"Error: no se encontraron los datos para este jugador"})
+    
+    return data
