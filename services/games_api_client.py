@@ -1,4 +1,5 @@
 from nba_api.stats.endpoints import scoreboardv3
+from nba_api.stats.endpoints import leaguestandingsv3
 from datetime import date
 
 def fetch_scoreboard(game_date=None):
@@ -10,3 +11,8 @@ def fetch_scoreboard(game_date=None):
     games = data["scoreboard"]["games"]
 
     return games
+
+def fetch_standings(season = None):
+    standings = leaguestandingsv3.LeagueStandingsV3(season=season)
+    data = standings.get_normalized_dict()
+    return data["Standings"]

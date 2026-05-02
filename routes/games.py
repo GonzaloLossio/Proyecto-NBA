@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify
-from services.games_api_client import fetch_scoreboard
+from services.games_api_client import fetch_scoreboard, fetch_standings
 
 games_bp = Blueprint("games",__name__)
 
@@ -50,3 +50,38 @@ def scoreboard():
 
 
     return jsonify(clean_data)
+
+@games_bp.route("/standings")
+def standings():    
+    season = request.args.get("season")
+
+    if not season:
+        return jsonify({"Error " : "Se necesita de la temporada para ver la informacion"}),400
+    
+    data = fetch_standings(season=season)
+
+    if not data:
+        return jsonify({"Error" : "No existe informacion de lo que busca"}),404
+    
+    clean_data = []
+    east = []
+    west = []
+
+    for d in data:
+        clean_data  = {
+            "team" : d["TeamCity"] + " " + d["TeamName"],
+            "wins" : d["WINS"],
+            "loses" : d["LOSSES"],
+            "win_pct" : d["WinPCT"],
+        }
+        
+        if d["Conference"] == "East":
+            east.append(clean_data)
+        else:
+            west.append(clean_data)    
+
+    east = sorted(east,key = lambda x: x["win_pct"],reverse=True)
+    west = sorted(west,key = lambda x: x["win_pct"],reverse=True)
+
+    return jsonify({"east" : east,"west" : west})
+          
