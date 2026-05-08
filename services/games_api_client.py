@@ -1,5 +1,6 @@
 from nba_api.stats.endpoints import scoreboardv3
 from nba_api.stats.endpoints import leaguestandingsv3
+from nba_api.stats.endpoints import boxscoretraditionalv3
 from datetime import date
 
 def fetch_scoreboard(game_date=None):
@@ -16,3 +17,8 @@ def fetch_standings(season = None):
     standings = leaguestandingsv3.LeagueStandingsV3(season=season)
     data = standings.get_normalized_dict()
     return data["Standings"]
+
+def fetch_box_score(game_id = None):
+    box = boxscoretraditionalv3.BoxScoreTraditionalV3(game_id)
+    data = box.get_dict()
+    return data["boxScoreTraditional"]

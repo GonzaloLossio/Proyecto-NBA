@@ -7,3 +7,9 @@ def calcAverages(games):
             "assists" :round(sum(g["AST"] for g in games)/i,1), 
             "rebounds" : round(sum(g["REB"] for g in games)/i,1)
         }
+
+def get_top_stat(players,stat_key):
+        try:
+                return max(players,key = lambda p : p["statistics"].get(stat_key,0))
+        except (KeyError,ValueError):
+                return None
