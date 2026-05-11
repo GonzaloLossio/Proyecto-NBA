@@ -1,9 +1,12 @@
 from flask import Flask
 from routes.players import players_bp
 from routes.games import games_bp
+from routes.auth import auth_bp
 from extensions import cache, limiter,db,bcrypt,login_manager
 from errors import register_error_handlers
 from flasgger import Swagger
+from models.favorite import Favorite
+from models.user import User
 
 
 app = Flask(__name__)
@@ -22,7 +25,7 @@ register_error_handlers(app)
 
 app.register_blueprint(players_bp)
 app.register_blueprint(games_bp)
-
+app.register_blueprint(auth_bp)
 
 @app.route('/')
 def index():
