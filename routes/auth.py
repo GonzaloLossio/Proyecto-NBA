@@ -17,10 +17,10 @@ def register():
         return jsonify({"Error" : "Todos los campos son obligatorios"}),400
     
     if User.query.filter_by(email = email).first():
-        return jsonify({"Error" : "Email ya esta registrado"}),201
+        return jsonify({"Error" : "Email ya esta registrado"}),400
     
     if User.query.filter_by(username = username).first():
-        return jsonify({"Error" : "Usuario ya existe"}),201
+        return jsonify({"Error" : "Usuario ya existe"}),400
 
     hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
@@ -28,7 +28,7 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"Mensaje" : f"Usuario {username} creado exitosamente"}),201
+    return jsonify({"Mensaje" : f"Usuario {username} creado exitosamente"}),400
 
 @auth_bp.route("/login",methods = ["POST"])
 def login():
